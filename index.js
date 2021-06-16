@@ -6,43 +6,37 @@ const gameBoard = (() => {
     row3: [0,0,0]
   };
 
-  const generateBoard = function(){
-    const cell = document.createElement("span");
-    const row = document.createElement("div");
-    
-    cell.className = "cell";
-    row.className = "row";
+  const gamePlay = function(){
+    // This will change the gameBoardObject in line with the plays made on the page
+  }
 
+  const playSwitch = function(){
+    // This will be attached to each of the cells.
+    // This will be the eventListener that will change the visual on the board, and interact with the gamePlay function
+  }
+
+  const generateBoard = function(){
     const board = document.getElementById("board")
 
-    for (let i in gameBoardObject){
+    for (const key of Object.keys(gameBoardObject)){
+      const row = document.createElement("div");
+      row.className = "row";
+      
+      for (let values of gameBoardObject[key]){
+        const cell = document.createElement("span");
+        let text = document.createTextNode(values);
+        cell.className = "cell";
+        cell.appendChild(text);
+        row.appendChild(cell);
+      }
       board.appendChild(row);
     }
-
   }
 
   return {gameBoardObject, generateBoard}
 })();
 
-// gameBoard.generateBoard();
-
-const test = {
-  first: [1,2,3],
-  second: [4,5,6],
-  third: [7,8,9]
-}
-
-for (const key of Object.keys(test)){
-  const board = document.getElementById('board');
-  const div = document.createElement('div');
-  for (let values of test[key]){
-    const span = document.createElement('span');
-    let text = document.createTextNode(values);
-    span.appendChild(text);
-    div.appendChild(span);
-  }
-  board.appendChild(div);
-}
+gameBoard.generateBoard();
 
 const winCondition = function(gameState){
   // All three of a single row are one player
