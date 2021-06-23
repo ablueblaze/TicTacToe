@@ -1,9 +1,9 @@
  const gameBoard = (() => {
   // Module for the game board
   let gameBoardObject = {
-    row1: [0,1,1],
-    row2: [0,1,1],
-    row3: [0,1,1]
+    row1: [0,0,0],
+    row2: [0,0,0],
+    row3: [0,0,0]
   };
 
   const boardReset = function() {};
@@ -13,15 +13,17 @@
     // plays made on the page
   }
 
-  const playSwitch = function(key, index){
+  const playSwitch = function(key, index, playCount){
     // This will be attached to each of the cells.
     // This will be the eventListener that will change the 
     //  visual on the board, and interact with the gamePlay function
     
-    if (gameBoardObject[key][index] == 0){
-      gameBoardObject[key][index] = 1;
-    } else if (gameBoardObject[key][index] == 1) {
-      gameBoardObject[key][index] = 0;
+    if (playCount == 0){
+      if (gameBoardObject[key][index] == 0){
+        gameBoardObject[key][index] = 1;
+      } else if (gameBoardObject[key][index] == 1) {
+        gameBoardObject[key][index] = 0;
+      }
     }
   }
 
@@ -31,17 +33,14 @@
     let target = e.target;
     let objectKey = target.dataset.key;
     let objectIndex = parseFloat(target.dataset.index)
+    let playCounter = parseFloat(target.dataset.playedCount);
 
     if (target.className == 'cell'){
-      console.log(`Target text: ${target.textContent}`);
-      console.log(`Target key: ${target.dataset.key}`);
-      console.log(`Target index: ${target.dataset.index}`);
-      playSwitch(target.dataset.key, target.dataset.index)
-      console.table(gameBoardObject)
-      // console.log(`objectKey ${gameBoardObject[objectKey][2]}`)
-      console.log(gameBoardObject[objectKey][objectIndex]);
+      // Update the board on screen and in the object.
+      // Counter in place to keep from multi plays.
+      playSwitch(objectKey, objectIndex, playCounter)
+      target.dataset.playedCount++
       target.textContent = gameBoardObject[objectKey][objectIndex];
-
     }
   })
 
@@ -57,6 +56,7 @@
 
         cell.dataset.key = key;
         cell.dataset.index = i;
+        cell.dataset.playedCount = 0;
         cell.className = "cell";
         cell.appendChild(text);
         board.appendChild(cell);
@@ -88,7 +88,3 @@ const winCondition = function(gameState){
 //     cell.appendChild(text);
 //     row.appendChild(cell);
 //   }
-
-
-
-document.querySelector('#btn')
