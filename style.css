@@ -1,0 +1,31 @@
+html {
+  background-color: teal;
+  border: dotted 1px white;
+}
+
+body {
+  border: solid 1px black;
+}
+
+.container {
+  height: 310px;
+  width: 310px;
+  border: solid 2px red;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+}
+
+.cell {
+  border: solid 2px blue;
+  width: 100px;
+  height: 100px;
+  font-size: 3rem;
+  text-align: center;
+  
+}
