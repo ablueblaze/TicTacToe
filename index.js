@@ -1,7 +1,7 @@
-const gameBoard = (() => {
+ const gameBoard = (() => {
   // Module for the game board
   let gameBoardObject = {
-    row1: [0,1,2],
+    row1: [0,1,1],
     row2: [0,1,1],
     row3: [0,1,1]
   };
@@ -26,20 +26,28 @@ const gameBoard = (() => {
   }
 
   const board = document.querySelector('#board').addEventListener('click', (e) => {
-    // console.log(e)
+    // Capture event that will change the status of the object, 
+    // and change the board visual.
     let target = e.target;
+    let objectKey = target.dataset.key;
+    let objectIndex = parseFloat(target.dataset.index)
 
     if (target.className == 'cell'){
-      console.log(target.textContent)
+      console.log(`Target text: ${target.textContent}`);
+      console.log(`Target key: ${target.dataset.key}`);
+      console.log(`Target index: ${target.dataset.index}`);
+      playSwitch(target.dataset.key, target.dataset.index)
+      console.table(gameBoardObject)
+      // console.log(`objectKey ${gameBoardObject[objectKey][2]}`)
+      console.log(gameBoardObject[objectKey][objectIndex]);
+      target.textContent = gameBoardObject[objectKey][objectIndex];
 
     }
-    // playSwitch(key, gameBoardObject[key].indexOf(value));
-    // cell.textContent = gameBoardObject[key][value];
-    // console.table(gameBoardObject);
   })
 
 
   const generateBoard = function(){
+    // Generate the game board, and assign key and index to each cell.
     const board = document.getElementById("board")
     for (const key of Object.keys(gameBoardObject)){
       for (let i = 0; i < gameBoardObject[key].length; i++){
@@ -47,7 +55,8 @@ const gameBoard = (() => {
         const cell = document.createElement('span');
         let text = document.createTextNode(gameBoardObject[key][i]);
 
-        
+        cell.dataset.key = key;
+        cell.dataset.index = i;
         cell.className = "cell";
         cell.appendChild(text);
         board.appendChild(cell);
