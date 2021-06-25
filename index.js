@@ -2,9 +2,9 @@ const boardTools = (() => {
   // A game board that is mutable.
   // Note: May change this later.
   let gameBoard = {
-    row1: [,,],
-    row2: [,,],
-    row3: [,,]
+    row1: [0,0,0],
+    row2: [0,0,0],
+    row3: [0,0,0]
   };
 
   const generateBoard = function(){
@@ -14,14 +14,14 @@ const boardTools = (() => {
     for (let i = 0; i < 3; i++){
       for (let n = 0; n < 3; n++){
         const cell = document.createElement("span");
-        cell.dataset.key = key;
+        cell.dataset.key = `row${key}`;
         cell.dataset.index = index;
         cell.className = "cell";
         board.appendChild(cell);
         index++
       }
       key++;
-      value = 0;
+      index = 0;
     }
   }
   return {generateBoard, gameBoard}
@@ -38,12 +38,27 @@ let player1 = player("X", 0);
 let player2 = player("O", 0);
 
 const gameController = (() => {
+  let playCount = 0;
+  
   const playerSwitch = function(){
 
   }
 
-  const boardUpdate = function(board, key, index, player){
+  const boardUpdate = function(key, index){
+    playCount++
 
+    const play = (player) => {
+      boardTools.gameBoard[key][index] = player;
+      cell = player;
+    }
+  
+    if (playCount % 2 != 0){
+      play(player1.name)
+      return player1.name;
+    } else {
+      play(player2.name)
+      return player2.name
+    }
     
   }
 
@@ -55,9 +70,11 @@ const gameController = (() => {
 
       if(target.className == "cell"){
         let key = target.dataset.key;
-        let index = target.dataset.index;
+        let index = parseFloat(target.dataset.index);
+        console.log(target.textContent);
 
-        console.log(target)
+        target.textContent = boardUpdate(key, index);
+        // console.log(target)
       }
     }
   )
