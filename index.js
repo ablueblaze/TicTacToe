@@ -7,6 +7,8 @@ const boardTools = (() => {
     row3: [0,0,0]
   };
 
+  
+
   const generateBoard = function(){
     const board = document.getElementById("board");
     let key = 1;
@@ -37,48 +39,87 @@ const player = function(name, score){
 let player1 = player("X", 0);
 let player2 = player("O", 0);
 
+
 const gameController = (() => {
   let playCount = 0;
   
-  const playerSwitch = function(){
+  const winner = function(player){
+    // All three rows with the same index as the same player
+    // Index 0,1,2 in row1, row2, row3
+    // Index 2,1,0 in row1, row2, row3
 
+
+    let currentBoardList = [];
+
+    let colum1 = [];
+    let colum2 = [];
+    let colum3 = [];
+    let cross1 = [];
+    let cross2 = [];
+    let count = 0;
+
+    for (let key of Object.keys(test)){
+      currentBoardList.push(test[key])
+      colum1.push(test[key][0])
+      colum2.push(test[key][1])
+      colum3.push(test[key][2])
+      cross1.push(test[key][0 + count])
+      cross2.push(test[key][2 - count])
+      count++
+
+      if (colum1.length == 2){
+        currentBoardList.push(colum1, colum2, colum3, cross1, cross2)
+      }
+    }
+
+    for (let key of Object.keys(boardTools.gameBoard)){
+      // All three of a single row are one player
+
+      let play = boardTools.gameBoard[key];
+      console.log(`play: ${play} player: ${player}`)
+      if (
+        play[0] == player &&
+        play[1] == player &&
+        play[2] == player ){
+        console.log(`${player} Wins! (Horizontal)`)
+      } 
+        index++
+    }
   }
 
   const boardUpdate = function(key, index){
-    playCount++
-
+    currentPlay = boardTools.gameBoard[key][index]
     const play = (player) => {
       boardTools.gameBoard[key][index] = player;
       cell = player;
     }
-  
-    if (playCount % 2 != 0){
-      play(player1.name)
-      return player1.name;
-    } else {
-      play(player2.name)
-      return player2.name
-    }
-    
+
+    if (currentPlay == 0){
+      playCount++
+      if (playCount % 2 != 0){
+        play(player1.name);
+        winner(player1.name);
+        return player1.name;
+      } else {
+        play(player2.name);
+        winner(player2.name);
+        return player2.name;
+      }
+    } else {return currentPlay}
   }
 
   const playSelector = document.querySelector("body");
-  playSelector.addEventListener(
-    "click", (e) => {
+  playSelector.addEventListener("click", (e) => {
       let target = e.target;
-      // console.log(target);
-
       if(target.className == "cell"){
         let key = target.dataset.key;
         let index = parseFloat(target.dataset.index);
-        console.log(target.textContent);
-
         target.textContent = boardUpdate(key, index);
-        // console.log(target)
+        winner();
       }
     }
   )
-  return {}
+  return {winner}
 })();
 
 boardTools.generateBoard();
