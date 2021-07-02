@@ -10,13 +10,13 @@
 <body>
   <div class="container">
     <header>Tic Tac Toe</header>
-    <p>Wins: </p>
+    <p class="wins">Wins: </p>
     <div class="score-board">
-      <span id="x">X: </span>
-      <span id="y">Y: </span>
+      <div class="score-box" >X: <input type="text" name="score" id="x" value="0" disabled></div>
+      <div class="score-box" >Y: <input type="text" name="score" id="y" value="0" disabled></div>
     </div>
     <div id="board" class="board"></div>
-    <div id="buttons">
+    <div class="buttons">
       <button id="new-game">New Game</button>
       <button id="clear-score">Clear Score</button>
     </div>
