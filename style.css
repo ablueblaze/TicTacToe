@@ -2,12 +2,53 @@
   margin: 0;
   padding: 0;
 }
+
+html, body {
+  height: 100%;
+}
+
 .container {
   background-color: rgb(97, 94, 250);
-
   width: 100%;
   height: 100%;
+  text-align: center;
+}
+
+header {
+  font-size: 4rem;
+  background-color: rgb(247, 0, 164);
+  text-align: center;
+}
+
+.wins {
+  margin-top: 30px;
+  margin-bottom: 5px;
+  font-size: 1.5rem;
+}
+
+.score-board {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-bottom: 5px;
+}
+
+.score-box {
+  font-size: 1.5rem;
+  width: 5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
   
+}
+
+.score-box input {
+  width: 3rem;
+  font-size: 1.5rem;
+  color: red;
+  text-align: center;
+  border-style: hidden;
+  background-color: rgba(0, 255, 255, 0);
 }
 
 .board {
@@ -18,10 +59,20 @@
 
 .cell {
   outline: solid blue;
-  
   width: 100px;
   height: 100px;
   font-size: 3rem;
   text-align: center;
   cursor: pointer;
+}
+
+.buttons {
+  padding: 20px;
+}
+
+.buttons button {
+  margin: 10px;
+  width: 8rem;
+  height: 2rem;
+  font-size: 1.2rem;
 }
