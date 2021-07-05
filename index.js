@@ -37,13 +37,22 @@ const player = function(name, score){
   }
 }
 
-let player1 = player("X", 0);
-let player2 = player("O", 0);
+let player1 = player("X", "0");
+let player2 = player("O", "0");
 
 const gameController = (() => {
   let playCount = 0;
   let gameOver = false;
+
+  const scoreKeeper = function(player){
+    let currentScore = document.querySelector(`#${player.name}`)
+    console.log(currentScore)
+    currentScore.value = player.score;
+  }
   
+  scoreKeeper(player2)
+  scoreKeeper(player1)
+
   const activeBoard = () => {
     let currentBoard = [];
     let colum1 = [];
@@ -68,33 +77,43 @@ const gameController = (() => {
     }
   }
   
+  const modal = document.querySelector('.modal-bg');
+  const winner = document.querySelector('#winner');
+  const winScreenOn = function(player) {
+    winner.textContent = player.name;
+    modal.classList.add('modal-active');
+  }
+  
   const findWinner = function(player){
     currentBoard = activeBoard();
     for (let i = 0; i < currentBoard.length; i++)
-      if (
-        currentBoard[i][0] == player &&
-        currentBoard[i][1] == player &&
-        currentBoard[i][2] == player ){
-        console.log(`${player} Wins!`);
+    if (
+      currentBoard[i][0] == player.name &&
+      currentBoard[i][1] == player.name &&
+      currentBoard[i][2] == player.name ){
+        winScreenOn(player)
+        console.log(`${player.name} Wins!`);
+        player.score++
+        scoreKeeper(player)
         gameOver = true;
       } 
     }
-
-  const gameUpdate = function(key, index){
-    currentPlayCell = boardTools.gameBoard[key][index]
-    const play = (player) => {
-      boardTools.gameBoard[key][index] = player;
-      cell = player;
+    
+    const gameUpdate = function(key, index){
+      currentPlayCell = boardTools.gameBoard[key][index]
+      const play = (player) => {
+        boardTools.gameBoard[key][index] = player;
+        cell = player;
     }
     if (currentPlayCell == 0){
       playCount++
       if (playCount % 2 != 0){
         play(player1.name);
-        findWinner(player1.name);
+        findWinner(player1);
         return player1.name;
       } else if (playCount % 2 == 0){
         play(player2.name);
-        findWinner(player2.name);
+        findWinner(player2);
         return player2.name;
       }
     } else {return currentPlayCell}
@@ -111,41 +130,59 @@ const gameController = (() => {
       }
     }
   })
-
+  
   const gameBoardReset = function() {
     const boardReset = 0;
     for (key of Object.keys(boardTools.gameBoard)){
       for (let i = 0; i < 3; i++){
-      boardTools.gameBoard[key][i] = boardReset
+        boardTools.gameBoard[key][i] = boardReset
     }
   }
 }
 
 const gamePageReset = function() {
-    const cells = document.querySelectorAll('.cell');
-    for (let i = 0; i < cells.length; i++){
-      cells[i].textContent = ""
-    }
-    
-
+  const cells = document.querySelectorAll('.cell');
+  for (let i = 0; i < cells.length; i++){
+    cells[i].textContent = ""
   }
-    
+}
+
+const scoreReset = function() {
+  player1.score = '0';
+  player2.score = '0';
+  scoreKeeper(player1)
+    scoreKeeper(player2)
+  }
+  
+  const gameReset = function() {
+    gameBoardReset();
+    gamePageReset();
+    playCount = 0;
+    gameOver = false;
+  }
+  
+  const winScreenOff = function() {
+    modal.classList.remove('modal-active');
+    gameReset();
+  }
+
+  modal.addEventListener('click', winScreenOff)
+  
   const gameButtons = document.querySelector(".buttons");
   gameButtons.addEventListener("click", (e) => {
     let target = e.target;
     if (target.id == "new-game"){
-      gameBoardReset();
-      gamePageReset();
-      playCount = 0;
-      gameOver = false;
-
+      gameReset();
     }
     if (target.id == "clear-score"){
-      console.log("clear score")
+      scoreReset();
     }
   })
 
-  return {findWinner, gameBoardReset, gamePageReset, playCount}
+  return {playCount, gameOver, findWinner, gameBoardReset, gamePageReset, winScreenOn, winScreenOff}
 })();
 
+const winScreenOff = function() {
+  modal.classList.remove('modal-active');
+}
 boardTools.generateBoard();
