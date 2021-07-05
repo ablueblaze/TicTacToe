@@ -76,3 +76,31 @@ header {
   height: 2rem;
   font-size: 1.2rem;
 }
+
+.modal-bg {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background-color: rgba(3, 38, 112, 0.644);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.5s;
+}
+
+.modal-active {
+  visibility: visible;
+  opacity: 1;
+}
+
+.modal {
+  background-color: rgba(255, 255, 255, 0);
+  text-shadow: 1px 1px 20px white, 1px 1px 2px white;
+  font-size: 40px;
+  height: 400px;
+}
