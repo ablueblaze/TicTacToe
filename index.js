@@ -80,39 +80,72 @@ const gameController = (() => {
       } 
     }
 
-  const boardUpdate = function(key, index){
-    currentPlay = boardTools.gameBoard[key][index]
+  const gameUpdate = function(key, index){
+    currentPlayCell = boardTools.gameBoard[key][index]
     const play = (player) => {
       boardTools.gameBoard[key][index] = player;
       cell = player;
     }
-    if (currentPlay == 0){
+    if (currentPlayCell == 0){
       playCount++
       if (playCount % 2 != 0){
         play(player1.name);
         findWinner(player1.name);
         return player1.name;
-      } else {
+      } else if (playCount % 2 == 0){
         play(player2.name);
         findWinner(player2.name);
         return player2.name;
       }
-    } else {return currentPlay}
+    } else {return currentPlayCell}
   }
   
-  const playSelector = document.querySelector("body");
+  const playSelector = document.querySelector("#board");
   playSelector.addEventListener("click", (e) => {
-      let target = e.target;
-      if (gameOver == false){
-        if(target.className == "cell"){
-          let key = target.dataset.key;
-          let index = parseFloat(target.dataset.index);
-          target.textContent = boardUpdate(key, index);
-        }
+    let target = e.target;
+    if (gameOver == false){
+      if(target.className == "cell"){
+        let key = target.dataset.key;
+        let index = parseFloat(target.dataset.index);
+        target.textContent = gameUpdate(key, index);
       }
-    })
+    }
+  })
 
-  return {findWinner}
+  const gameBoardReset = function() {
+    const boardReset = 0;
+    for (key of Object.keys(boardTools.gameBoard)){
+      for (let i = 0; i < 3; i++){
+      boardTools.gameBoard[key][i] = boardReset
+    }
+  }
+}
+
+const gamePageReset = function() {
+    const cells = document.querySelectorAll('.cell');
+    for (let i = 0; i < cells.length; i++){
+      cells[i].textContent = ""
+    }
+    
+
+  }
+    
+  const gameButtons = document.querySelector(".buttons");
+  gameButtons.addEventListener("click", (e) => {
+    let target = e.target;
+    if (target.id == "new-game"){
+      gameBoardReset();
+      gamePageReset();
+      playCount = 0;
+      gameOver = false;
+
+    }
+    if (target.id == "clear-score"){
+      console.log("clear score")
+    }
+  })
+
+  return {findWinner, gameBoardReset, gamePageReset, playCount}
 })();
 
 boardTools.generateBoard();
