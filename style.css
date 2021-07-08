@@ -77,6 +77,20 @@ header {
   font-size: 1.2rem;
 }
 
+.radio {
+  
+  display: flex;
+  justify-content: center;
+}
+
+#ai {
+  margin-left: 3rem;
+}
+
+#player {
+  margin-left: 0;
+}
+
 .modal-bg {
   position: fixed;
   width: 100%;
