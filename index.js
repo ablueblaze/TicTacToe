@@ -75,8 +75,8 @@ const gameController = (() => {
   function updateScoreBoard(player1Score, player2Score) {
     const p1Score = document.querySelector("#player-one-score");
     const p2Score = document.querySelector("#player-two-score");
-    p1Score.textContent = player1Score
-    p2Score.textContent = player2Score
+    p1Score.textContent = player1Score;
+    p2Score.textContent = player2Score;
   }
 
   // Start new game, setting players as different marker values based on previous
@@ -105,7 +105,7 @@ const gameController = (() => {
 
   function makePlay(player, cell, player1, player2) {
     const cellNumber = cell.dataset.cellValue;
-    utilities.showCurrentPLayer(player1.marker, player2.marker)
+    utilities.showCurrentPLayer(player1.marker, player2.marker);
     if (isOpen(cell)) {
       markPlay(cellNumber, player.marker);
       player.addPlay(parseFloat(cellNumber));
@@ -117,10 +117,11 @@ const gameController = (() => {
     makePlay,
     checkEndGame,
     resetGame,
+    clearBoard,
+    updateScoreBoard
   };
 })();
 
-//
 const utilities = (() => {
   // Toggle between the given players
   let playCounter = 1;
@@ -143,22 +144,45 @@ const utilities = (() => {
   }
 
   function showCurrentPLayer(player1Marker, player2Marker) {
-    const playerSpan = document.querySelector('#current-player')
-    if (playCounter % 2 != 0) {
-      playerSpan.textContent = player1Marker;
-    } else {
+    const playerSpan = document.querySelector("#current-player");
+    if (playCounter % 2 == 0) {
       playerSpan.textContent = player2Marker;
+    } else {
+      playerSpan.textContent = player1Marker;
     }
   }
 
-  return { toggleModal, togglePlayer, playCounter, showCurrentPLayer };
+  function resetCounter(){
+    playCounter = 1;
+  }
+
+  return { toggleModal, togglePlayer, resetCounter, showCurrentPLayer };
 })();
 
-//! Working zone  \\
+const buttons = (() => {
+  //Resets All values back to default
+  function newGame(player1, player2) {
+    clearScore(player1, player2);
+    gameController.clearBoard();
+    utilities.resetCounter();
+    utilities.showCurrentPLayer(player1.marker, player2.marker)
+  }
 
+  function clearScore(player1, player2) {
+    player1.clearScore()
+    player1.clearPlays()
+    player2.clearScore()
+    player2.clearPlays()
+    gameController.updateScoreBoard(player1.score, player2.score)
+  }
 
+  function playerVsPlayer() {}
 
-//! end of working zone  \\
+  function playerVsAi() {}
+
+  return { newGame, clearScore, playerVsPlayer, playerVsAi }
+})();
+
 document.addEventListener("click", (e) => {
   let target = e.target;
   if (target.className === "modal active") {
@@ -172,5 +196,11 @@ document.addEventListener("click", (e) => {
       player1,
       player2
     );
+  }
+  if (target.id === "new-game") {
+    buttons.newGame(player1, player2)
+  }
+  if (target.id === "clear-score") {
+    buttons.clearScore(player1, player2)
   }
 });
