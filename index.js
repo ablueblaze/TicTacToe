@@ -1,188 +1,176 @@
-const boardTools = (() => {
-  // A game board that is mutable.
-  // Note: May change this later.
-  let gameBoard = {
-    row1: [0,0,0],
-    row2: [0,0,0],
-    row3: [0,0,0]
-  };
-
-  const generateBoard = function(){
-    const board = document.getElementById("board");
-    let key = 1;
-    let index = 0;
-    for (let i = 0; i < 3; i++){
-      let row = document.createElement("div")
-      row.className = "row";
-      board.appendChild(row)
-      for (let n = 0; n < 3; n++){
-        let cell = document.createElement("div");
-        cell.dataset.key = `row${key}`;
-        cell.dataset.index = index;
-        cell.className = "cell";
-        row.appendChild(cell);
-        index++
-      }
-      key++;
-      index = 0;
-    }
+// A player class that will hold the players marker, and all the plays that they have made
+class Player {
+  constructor(marker, plays, score = 0) {
+    this.marker = marker;
+    this.plays = plays;
+    this.score = score;
   }
-  return {generateBoard, gameBoard}
-})();
-
-const player = function(name, score){
-  return{
-    name,
-    score
+  addPlay(play) {
+    this.plays.push(play);
+  }
+  clearPlays() {
+    this.plays = [];
+  }
+  clearScore() {
+    this.score = 0;
+  }
+  scoreUp() {
+    this.score++;
   }
 }
 
-let player1 = player("X", "0");
-let player2 = player("O", "0");
+let player1 = new Player("X", []);
+let player2 = new Player("O", []);
 
+// All things that manipulate the game go here
 const gameController = (() => {
-  let playCount = 0;
-  let gameOver = false;
-
-  const scoreKeeper = function(player){
-    let currentScore = document.querySelector(`#${player.name}`)
-    console.log(currentScore)
-    currentScore.value = player.score;
+  // Mark a cell with the players indicator
+  function isOpen(cell) {
+    if (cell.textContent === "") {
+      return true;
+    }
+    return false;
   }
-  
-  scoreKeeper(player2)
-  scoreKeeper(player1)
 
-  const activeBoard = () => {
-    let currentBoard = [];
-    let colum1 = [];
-    let colum2 = [];
-    let colum3 = [];
-    let cross1 = [];
-    let cross2 = [];
+  // Marks the indicated cell with given marker
+  function markPlay(cellDataValue, playerMarker) {
+    document.querySelector(`[data-cell-value="${cellDataValue}"]`).textContent =
+      playerMarker;
+  }
+
+  // returns true if player has a winning hand
+  function didIWin(currentPlayer) {
+    const winingHands = [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+      [1, 4, 7],
+      [2, 5, 8],
+      [3, 6, 9],
+      [1, 5, 9],
+      [3, 5, 7],
+    ];
     let count = 0;
-
-    for (let key of Object.keys(boardTools.gameBoard)){
-      currentBoard.push(boardTools.gameBoard[key])
-      colum1.push(boardTools.gameBoard[key][0])
-      colum2.push(boardTools.gameBoard[key][1])
-      colum3.push(boardTools.gameBoard[key][2])
-      cross1.push(boardTools.gameBoard[key][0 + count])
-      cross2.push(boardTools.gameBoard[key][2 - count])
-      count++
-      if (count == 3){
-        currentBoard.push(colum1, colum2, colum3, cross1, cross2)
-        return currentBoard;
+    for (let i of winingHands) {
+      for (let n of i) {
+        if (currentPlayer.plays.includes(n)) {
+          count++;
+        }
       }
-    }
-  }
-  
-  const modal = document.querySelector('.modal-bg');
-  const winner = document.querySelector('#winner');
-  const winScreenOn = function(player) {
-    winner.textContent = player.name;
-    modal.classList.add('modal-active');
-  }
-  
-  const findWinner = function(player){
-    currentBoard = activeBoard();
-    for (let i = 0; i < currentBoard.length; i++)
-    if (
-      currentBoard[i][0] == player.name &&
-      currentBoard[i][1] == player.name &&
-      currentBoard[i][2] == player.name ){
-        winScreenOn(player)
-        console.log(`${player.name} Wins!`);
-        player.score++
-        scoreKeeper(player)
-        gameOver = true;
-      } 
-    }
-    
-    const gameUpdate = function(key, index){
-      currentPlayCell = boardTools.gameBoard[key][index]
-      const play = (player) => {
-        boardTools.gameBoard[key][index] = player;
-        cell = player;
-    }
-    if (currentPlayCell == 0){
-      playCount++
-      if (playCount % 2 != 0){
-        play(player1.name);
-        findWinner(player1);
-        return player1.name;
-      } else if (playCount % 2 == 0){
-        play(player2.name);
-        findWinner(player2);
-        return player2.name;
+      if (count === 3) {
+        return true;
       }
-    } else {return currentPlayCell}
-  }
-  
-  const playSelector = document.querySelector("#board");
-  playSelector.addEventListener("click", (e) => {
-    let target = e.target;
-    if (gameOver == false){
-      if(target.className == "cell"){
-        let key = target.dataset.key;
-        let index = parseFloat(target.dataset.index);
-        target.textContent = gameUpdate(key, index);
-      }
+      count = 0;
     }
-  })
-  
-  const gameBoardReset = function() {
-    const boardReset = 0;
-    for (key of Object.keys(boardTools.gameBoard)){
-      for (let i = 0; i < 3; i++){
-        boardTools.gameBoard[key][i] = boardReset
-    }
-  }
-}
-
-const gamePageReset = function() {
-  const cells = document.querySelectorAll('.cell');
-  for (let i = 0; i < cells.length; i++){
-    cells[i].textContent = ""
-  }
-}
-
-const scoreReset = function() {
-  player1.score = '0';
-  player2.score = '0';
-  scoreKeeper(player1)
-    scoreKeeper(player2)
-  }
-  
-  const gameReset = function() {
-    gameBoardReset();
-    gamePageReset();
-    playCount = 0;
-    gameOver = false;
-  }
-  
-  const winScreenOff = function() {
-    modal.classList.remove('modal-active');
-    gameReset();
+    return false;
   }
 
-  modal.addEventListener('click', winScreenOff)
-  
-  const gameButtons = document.querySelector(".buttons");
-  gameButtons.addEventListener("click", (e) => {
-    let target = e.target;
-    if (target.id == "new-game"){
-      gameReset();
-    }
-    if (target.id == "clear-score"){
-      scoreReset();
-    }
-  })
+  // Display the Winner modal
+  function setWinner(winningPlayerMarker) {
+    const winner = document.querySelector(".winner");
+    winner.textContent = `Winner: ${winningPlayerMarker}`;
+  }
 
-  return {playCount, gameOver, findWinner, gameBoardReset, gamePageReset, winScreenOn, winScreenOff}
+  // Update score board
+  function updateScoreBoard(player1Score, player2Score) {
+    const p1Score = document.querySelector("#player-one-score");
+    const p2Score = document.querySelector("#player-two-score");
+    p1Score.textContent = player1Score
+    p2Score.textContent = player2Score
+  }
+
+  // Start new game, setting players as different marker values based on previous
+  function clearBoard() {
+    const allCells = document.querySelectorAll(".cell");
+    for (i of allCells) {
+      i.textContent = "";
+    }
+  }
+
+  function checkEndGame(currentPlayer, player1, player2) {
+    if (didIWin(currentPlayer)) {
+      setWinner(currentPlayer.marker);
+      currentPlayer.scoreUp();
+      updateScoreBoard(player1.score, player2.score);
+      utilities.toggleModal();
+    }
+    return;
+  }
+
+  function resetGame(player1, player2) {
+    clearBoard();
+    player1.clearPlays();
+    player2.clearPlays();
+  }
+
+  function makePlay(player, cell, player1, player2) {
+    const cellNumber = cell.dataset.cellValue;
+    utilities.showCurrentPLayer(player1.marker, player2.marker)
+    if (isOpen(cell)) {
+      markPlay(cellNumber, player.marker);
+      player.addPlay(parseFloat(cellNumber));
+      checkEndGame(player, player1, player2);
+    }
+  }
+
+  return {
+    makePlay,
+    checkEndGame,
+    resetGame,
+  };
 })();
 
-const winScreenOff = function() {
-  modal.classList.remove('modal-active');
-}
-boardTools.generateBoard();
+//
+const utilities = (() => {
+  // Toggle between the given players
+  let playCounter = 1;
+  function togglePlayer(player1, player2) {
+    playCounter++;
+    if (playCounter % 2 == 0) {
+      return player1;
+    } else {
+      return player2;
+    }
+  }
+
+  function toggleModal() {
+    const modal = document.querySelector(".modal");
+    if (modal.className === "modal active") {
+      modal.classList.remove("active");
+    } else if (modal.className === "modal") {
+      modal.classList.add("active");
+    }
+  }
+
+  function showCurrentPLayer(player1Marker, player2Marker) {
+    const playerSpan = document.querySelector('#current-player')
+    if (playCounter % 2 != 0) {
+      playerSpan.textContent = player1Marker;
+    } else {
+      playerSpan.textContent = player2Marker;
+    }
+  }
+
+  return { toggleModal, togglePlayer, playCounter, showCurrentPLayer };
+})();
+
+//! Working zone  \\
+
+
+
+//! end of working zone  \\
+document.addEventListener("click", (e) => {
+  let target = e.target;
+  if (target.className === "modal active") {
+    utilities.toggleModal();
+    gameController.resetGame(player1, player2);
+  }
+  if (target.dataset.cellValue) {
+    gameController.makePlay(
+      utilities.togglePlayer(player1, player2),
+      target,
+      player1,
+      player2
+    );
+  }
+});
