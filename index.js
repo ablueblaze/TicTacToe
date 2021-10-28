@@ -1,6 +1,61 @@
+document.addEventListener("DOMContentLoaded", () => {
+
+  // Event listener for all the cells
+  document.querySelectorAll(".cell").forEach((cell) =>
+    cell.addEventListener("click", (e) => {
+      gameControls.makePlay(e, player1, player2, testBoard);
+    })
+  );
+
+  // Event listener for when the modal is active
+  document
+    .querySelector("[data-modal]")
+    .addEventListener("click", displayControls.toggleModal);
+
+  // Event listener for the new game button
+  document.getElementById("new-game").addEventListener("click", () => {
+    gameControls.newGameBtn(testBoard);
+  });
+
+  // Event listener for the clear scores button
+  document.querySelector("#clear-scores").addEventListener("click", () => {
+    gameControls.clearAllScoresBtn(player1, player2);
+  });
+});
+
+class GameBoard {
+  constructor() {
+    this.controlBoard = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    this.displayBoard = ["", "", "", "", "", "", "", "", ""];
+  }
+  isFull() {
+    let count = 0;
+    for (let i = 1; i < 10; i++) {
+      if (this.controlBoard.includes(i)) {
+        count++;
+      }
+    }
+    if (count === 0) {
+      return true;
+    }
+  }
+  markBoard(play, playerMark) {
+    if (this.controlBoard.includes(play)) {
+      let index = this.controlBoard.findIndex((e) => e === play);
+      this.controlBoard[index] = 0;
+      this.displayBoard[index] = playerMark;
+      return true;
+    }
+  }
+  boardReset() {
+    this.controlBoard = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    this.displayBoard = ["", "", "", "", "", "", "", "", ""];
+  }
+}
+
 // A player class that will hold the players marker, and all the plays that they have made
 class Player {
-  constructor(marker, plays, score = 0) {
+  constructor(marker, plays = [], score = 0) {
     this.marker = marker;
     this.plays = plays;
     this.score = score;
@@ -17,29 +72,8 @@ class Player {
   scoreUp() {
     this.score++;
   }
-}
-
-let player1 = new Player("X", []);
-let player2 = new Player("O", []);
-
-// All things that manipulate the game go here
-const gameController = (() => {
-  // Mark a cell with the players indicator
-  function isOpen(cell) {
-    if (cell.textContent === "") {
-      return true;
-    }
-    return false;
-  }
-
-  // Marks the indicated cell with given marker
-  function markPlay(cellDataValue, playerMarker) {
-    document.querySelector(`[data-cell-value="${cellDataValue}"]`).textContent =
-      playerMarker;
-  }
-
   // returns true if player has a winning hand
-  function didIWin(currentPlayer) {
+  didIWin() {
     const winingHands = [
       [1, 2, 3],
       [4, 5, 6],
@@ -53,7 +87,7 @@ const gameController = (() => {
     let count = 0;
     for (let i of winingHands) {
       for (let n of i) {
-        if (currentPlayer.plays.includes(n)) {
+        if (this.plays.includes(n)) {
           count++;
         }
       }
@@ -64,65 +98,74 @@ const gameController = (() => {
     }
     return false;
   }
+}
 
-  // Display the Winner modal
+//! test variables:
+const testBoard = new GameBoard();
+const testPlayer = new Player("X");
+let currentBoard = testBoard.displayBoard;
+const player1 = new Player("X");
+const player2 = new Player("O");
+
+const displayControls = (() => {
+  // Updates the pages game board
+  function boardUpdate(displayBoard) {
+    for (let i = 0; i < displayBoard.length; i++) {
+      let activeCell = document.querySelector(`[data-cell-value="${i + 1}"]`);
+      activeCell.textContent = displayBoard[i];
+    }
+  }
+
+  // Updates the pages score board
+  function scoreUpdate(player1Score, player2Score) {
+    const pXScore = document.querySelector("#player-one-score");
+    const pOScore = document.querySelector("#player-two-score");
+    pXScore.textContent = player1Score;
+    pOScore.textContent = player2Score;
+  }
+
+  // Update the current player banner, by flipping the return from current player
+  function showCurrentPLayer(currentPLayerMarker) {
+    const playerSpan = document.querySelector("#current-player");
+    if (currentPLayerMarker === "X") {
+      playerSpan.textContent = "O";
+      return;
+    }
+    playerSpan.textContent = "X";
+  }
+
+  // Set the Winner text in modal
   function setWinner(winningPlayerMarker) {
     const winner = document.querySelector(".winner");
     winner.textContent = `Winner: ${winningPlayerMarker}`;
   }
 
-  // Update score board
-  function updateScoreBoard(player1Score, player2Score) {
-    const p1Score = document.querySelector("#player-one-score");
-    const p2Score = document.querySelector("#player-two-score");
-    p1Score.textContent = player1Score;
-    p2Score.textContent = player2Score;
+  // Set the Winner text in modal to Tie
+  function showTie() {
+    const winner = document.querySelector(".winner");
+    winner.textContent = "It's a Draw!";
   }
 
-  // Start new game, setting players as different marker values based on previous
-  function clearBoard() {
-    const allCells = document.querySelectorAll(".cell");
-    for (i of allCells) {
-      i.textContent = "";
+  function toggleModal() {
+    const modal = document.querySelector("[data-modal]");
+    if (modal.className === "modal active") {
+      modal.classList.remove("active");
+      return;
     }
-  }
-
-  function checkEndGame(currentPlayer, player1, player2) {
-    if (didIWin(currentPlayer)) {
-      setWinner(currentPlayer.marker);
-      currentPlayer.scoreUp();
-      updateScoreBoard(player1.score, player2.score);
-      utilities.toggleModal();
-    }
-    return;
-  }
-
-  function resetGame(player1, player2) {
-    clearBoard();
-    player1.clearPlays();
-    player2.clearPlays();
-  }
-
-  function makePlay(player, cell, player1, player2) {
-    const cellNumber = cell.dataset.cellValue;
-    utilities.showCurrentPLayer(player1.marker, player2.marker);
-    if (isOpen(cell)) {
-      markPlay(cellNumber, player.marker);
-      player.addPlay(parseFloat(cellNumber));
-      checkEndGame(player, player1, player2);
-    }
+    modal.classList.add("active");
   }
 
   return {
-    makePlay,
-    checkEndGame,
-    resetGame,
-    clearBoard,
-    updateScoreBoard
+    boardUpdate,
+    scoreUpdate,
+    showCurrentPLayer,
+    setWinner,
+    showTie,
+    toggleModal,
   };
 })();
 
-const utilities = (() => {
+const gameControls = (() => {
   // Toggle between the given players
   let playCounter = 1;
   function togglePlayer(player1, player2) {
@@ -134,73 +177,59 @@ const utilities = (() => {
     }
   }
 
-  function toggleModal() {
-    const modal = document.querySelector(".modal");
-    if (modal.className === "modal active") {
-      modal.classList.remove("active");
-    } else if (modal.className === "modal") {
-      modal.classList.add("active");
-    }
-  }
-
-  function showCurrentPLayer(player1Marker, player2Marker) {
-    const playerSpan = document.querySelector("#current-player");
-    if (playCounter % 2 == 0) {
-      playerSpan.textContent = player2Marker;
-    } else {
-      playerSpan.textContent = player1Marker;
-    }
-  }
-
-  function resetCounter(){
+  function resetCounter() {
     playCounter = 1;
   }
 
-  return { toggleModal, togglePlayer, resetCounter, showCurrentPLayer };
+  function newGameBtn(activeBoard) {
+    resetCounter();
+    activeBoard.boardReset();
+    displayControls.boardUpdate(activeBoard.displayBoard);
+    displayControls.showCurrentPLayer("X");
+  }
+
+  function clearAllScoresBtn(player1, player2) {
+    player1.clearScore();
+    player2.clearScore();
+    displayControls.scoreUpdate(player1.score, player2.score);
+  }
+
+  function clearPlays(player1, player2, activeBoard) {
+    player1.clearPlays();
+    player2.clearPlays();
+    activeBoard.boardReset();
+  }
+
+  // Runs after a game is finished
+  function nextGame(player1, player2, activeBoard) {
+    clearPlays(player1, player2, activeBoard);
+    displayControls.boardUpdate(activeBoard.displayBoard);
+    displayControls.toggleModal();
+  }
+
+  // Check to see if a game is done
+  function endGame(currentPlayer, player1, player2, activeBoard) {
+    if (currentPlayer.didIWin()) {
+      currentPlayer.scoreUp();
+      displayControls.setWinner(currentPlayer.marker);
+      displayControls.scoreUpdate(player1.score, player2.score);
+      nextGame(player1, player2, activeBoard);
+    } else if (activeBoard.isFull()) {
+      displayControls.showTie();
+      clearPlays(player1, player2, activeBoard);
+      nextGame(player1, player2, activeBoard);
+    }
+  }
+
+  function makePlay(event, player1, player2, activeBoard) {
+    let currentPlayer = togglePlayer(player1, player2);
+    let cellValue = parseFloat(event.target.dataset.cellValue);
+    activeBoard.markBoard(cellValue, currentPlayer.marker);
+    currentPlayer.addPlay(cellValue);
+    displayControls.boardUpdate(activeBoard.displayBoard);
+    displayControls.showCurrentPLayer(currentPlayer.marker);
+    endGame(currentPlayer, player1, player2, activeBoard);
+  }
+
+  return { makePlay, clearPlays, newGameBtn, clearAllScoresBtn };
 })();
-
-const buttons = (() => {
-  //Resets All values back to default
-  function newGame(player1, player2) {
-    clearScore(player1, player2);
-    gameController.clearBoard();
-    utilities.resetCounter();
-    utilities.showCurrentPLayer(player1.marker, player2.marker)
-  }
-
-  function clearScore(player1, player2) {
-    player1.clearScore()
-    player1.clearPlays()
-    player2.clearScore()
-    player2.clearPlays()
-    gameController.updateScoreBoard(player1.score, player2.score)
-  }
-
-  function playerVsPlayer() {}
-
-  function playerVsAi() {}
-
-  return { newGame, clearScore, playerVsPlayer, playerVsAi }
-})();
-
-document.addEventListener("click", (e) => {
-  let target = e.target;
-  if (target.className === "modal active") {
-    utilities.toggleModal();
-    gameController.resetGame(player1, player2);
-  }
-  if (target.dataset.cellValue) {
-    gameController.makePlay(
-      utilities.togglePlayer(player1, player2),
-      target,
-      player1,
-      player2
-    );
-  }
-  if (target.id === "new-game") {
-    buttons.newGame(player1, player2)
-  }
-  if (target.id === "clear-score") {
-    buttons.clearScore(player1, player2)
-  }
-});
