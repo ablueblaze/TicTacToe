@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="index.js" defer></script>
+  <link rel="stylesheet" href="style.css">
+  <title>Tic Tac Toe</title>
+</head>
+<body>
+  <div class="main">
+    <header>
+      <h4>Tic Tac Toe</h4>
+    </header>
+    <div class="container">
+      <div class="score-board-container">
+        <h1>Wins:</h1>
+        <div class="scores">
+          <p class="score">X: <span id="player-one-score">0</span></p>
+          <p class="score">O: <span id="player-two-score">0</span></p>
+        </div>
+      </div>
+      <div class="current-player-container">
+        <h2>Current Player: <span id="current-player">X</span></h2>
+      </div>
+      <div class="game-board-container">
+        <div class="game-board">
+          <div class="row">
+            <div class="cell" data-cell-value="1"></div>
+            <div class="cell left-right-walls" data-cell-value="2"></div>
+            <div class="cell" data-cell-value="3"></div>
+          </div>
+          <div class="row">
+            <div class="cell top-bottom-walls" data-cell-value="4"></div>
+            <div class="cell all-walls" data-cell-value="5"></div>
+            <div class="cell top-bottom-walls" data-cell-value="6"></div>
+          </div>
+          <div class="row">
+            <div class="cell" data-cell-value="7"></div>
+            <div class="cell left-right-walls" data-cell-value="8"></div>
+            <div class="cell" data-cell-value="9"></div>
+          </div>
+        </div>
+      </div>
+      <div class="button-row-one">
+        <button id="new-game">New Game</button>
+        <button id="clear-scores">Clear Scores</button>
+      </div>
+      <div class="button-row-two">
+        <button id="player-player">Player vs. Player</button>
+        <button id="player-ai">Player vs. AI</button>
+      </div>
+
+
+    </div>
+    <footer>
+      <h4>by: Blaze Scott</h4>
+    </footer>
+    <div class="modal" data-modal>
+      <div class="modal-body">
+        <h1 class="winner">Winner: X</h1>
+      </div>
+    </div>
+  </div>
+  
+</body>
+</html>
