@@ -100,9 +100,7 @@ class Player {
   }
 }
 
-//! test variables:
 const testBoard = new GameBoard();
-const testPlayer = new Player("X");
 let currentBoard = testBoard.displayBoard;
 const player1 = new Player("X");
 const player2 = new Player("O");
