@@ -125,7 +125,7 @@ const displayControls = (() => {
   }
 
   // Update the current player banner, by flipping the return from current player
-  function showCurrentPLayer(currentPLayerMarker) {
+  function showCurrentPlayer(currentPLayerMarker) {
     const playerSpan = document.querySelector("#current-player");
     if (currentPLayerMarker === "X") {
       playerSpan.textContent = "O";
@@ -158,7 +158,7 @@ const displayControls = (() => {
   return {
     boardUpdate,
     scoreUpdate,
-    showCurrentPLayer,
+    showCurrentPlayer,
     setWinner,
     showTie,
     toggleModal,
@@ -185,7 +185,7 @@ const gameControls = (() => {
     resetCounter();
     activeBoard.boardReset();
     displayControls.boardUpdate(activeBoard.displayBoard);
-    displayControls.showCurrentPLayer("X");
+    displayControls.showCurrentPlayer("O");
   }
 
   function clearAllScoresBtn(player1, player2) {
@@ -227,7 +227,7 @@ const gameControls = (() => {
     activeBoard.markBoard(cellValue, currentPlayer.marker);
     currentPlayer.addPlay(cellValue);
     displayControls.boardUpdate(activeBoard.displayBoard);
-    displayControls.showCurrentPLayer(currentPlayer.marker);
+    displayControls.showCurrentPlayer(currentPlayer.marker);
     endGame(currentPlayer, player1, player2, activeBoard);
   }
 
